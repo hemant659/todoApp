@@ -1,6 +1,8 @@
 import React, {
   Component
 } from "react";
+import TodoItems from "./TodoItems";
+import "./TodoList.css";
 
 class TodoList extends Component {
   constructor(props) {
@@ -9,48 +11,53 @@ class TodoList extends Component {
       items: []
     };
     this.addItem = this.addItem.bind(this);
+    this.deleteItem = this.deleteItem.bind(this);
   }
   addItem(e) {
-      if (this._inputElement.value !== "") {
-        
-        var newItem = {
-          text: this._inputElement.value,
-          key: Date.now()
+    if (this._inputElement.value !== "") {
+
+      var newItem = {
+        text: this._inputElement.value,
+        key: Date.now()
+      };
+
+      this.setState((prevState) => {
+        return {
+          items: prevState.items.concat(newItem)
         };
+      });
 
-        this.setState((prevState) => {
-          return {
-            items: prevState.items.concat(newItem)
-          };
-        });
+      this._inputElement.value = "";
+    }
 
-        this._inputElement.value = "";
-      }
-
-      console.log(this.state.items);
-      e.preventDefault();
+    console.log(this.state.items);
+    e.preventDefault();
   }
-  render() {
-    return ( <
-      div className = "todoListMain" >
-      <
-      div className = "header" >
-      <
-      form onSubmit = {
-        this.addItem
-      } >
 
-      <
-      input ref = {
-        (a) => this._inputElement = a
-      }
-      placeholder = "enter task" >
-      <
-      /input> <
-      button type = "submit" > add < /button> <
-      /form> <
-      /div> <
-      /div>
+  deleteItem(key) {
+      var filteredItems = this.state.items.filter(function (item) {
+        return (item.key !== key);
+      });
+
+      this.setState({
+        items: filteredItems
+      });
+  }
+  
+  render() {
+    return (
+      <div className = "todoListMain" >
+          <div className = "header" >
+              <form onSubmit = {this.addItem}>
+                  <input ref = {(a) => this._inputElement = a}
+                    placeholder = "enter task" >
+                  </input>
+                  <button type = "submit" > add </button>
+              </form >
+            </div>
+          <TodoItems entries={this.state.items}
+          delete={this.deleteItem}/>
+          </div >
     );
   }
 }
